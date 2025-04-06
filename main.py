@@ -3,20 +3,26 @@ from pydantic import BaseModel
 from typing import List, Set, Dict
 from key_distribution import assign_keys
 
-app = FastAPI(title="Symmetric Key Distribution API", description="Assigns keys for provided networks.")
 
-# Define request model that expects a list of networks.
+app = FastAPI(
+    title="Symmetric Key Distribution API",
+    description="Assigns keys for provided networks."
+)
+
+
 class NetworkPlan(BaseModel):
     networks: List[Set[str]]
 
-# Response model for structured output.
+
 class Assignment(BaseModel):
     network: int
     key: int
     members: Dict[str, int]
 
+
 class AssignmentResponse(BaseModel):
     assignments: List[Assignment]
+
 
 @app.post("/assign_keys", response_model=AssignmentResponse)
 def assign_keys_endpoint(plan: NetworkPlan):
@@ -29,6 +35,7 @@ def assign_keys_endpoint(plan: NetworkPlan):
         return {"assignments": assignments}
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
 if __name__ == "__main__":
     import uvicorn
